@@ -8,6 +8,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.{RunnableGraph, Flow, Sink, Source}
 import io.bigpanda.streamprocessing.model.{InvalidJsonElement, JsonElement, ValidJsonElement}
 import io.bigpanda.streamprocessing.util.JsonUtil
+import akka.stream.ActorMaterializer
 import scala.io.StdIn
 
 class StreamProcessingService(config: Config, counterService:CounterService)(implicit system: ActorSystem) extends LazyLogging {
@@ -55,6 +56,7 @@ class StreamProcessingService(config: Config, counterService:CounterService)(imp
   }) 
 
   def execute(): Unit = {
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
     val runnable: RunnableGraph[Any] = source via parserFlow via eventTypeCounterFlow via wordCounterFlow to sink
     runnable run 
   } 
