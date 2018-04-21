@@ -5,7 +5,7 @@ import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import scala.concurrent.ExecutionContextExecutor
 import akka.NotUsed
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{RunnableGraph, Flow, Sink, Source}
 import io.bigpanda.streamprocessing.model.{InvalidJsonElement, JsonElement, ValidJsonElement}
 import io.bigpanda.streamprocessing.util.JsonUtil
 
@@ -35,7 +35,8 @@ class StreamProcessingService(config: Config, counterService:CounterService)(imp
 
 
   def execute(): Unit = {
-  
+    val runnable: RunnableGraph[Any] = source via parserFlow via eventTypeCounterFlow via wordCounterFlow to sink
+    runnable run 
   } 
 
 }
