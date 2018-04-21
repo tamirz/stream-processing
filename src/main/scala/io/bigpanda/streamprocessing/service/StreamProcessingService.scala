@@ -8,6 +8,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.{RunnableGraph, Flow, Sink, Source}
 import io.bigpanda.streamprocessing.model.{InvalidJsonElement, JsonElement, ValidJsonElement}
 import io.bigpanda.streamprocessing.util.JsonUtil
+import scala.io.StdIn
 
 class StreamProcessingService(config: Config, counterService:CounterService)(implicit system: ActorSystem) extends LazyLogging {
 
@@ -23,7 +24,9 @@ class StreamProcessingService(config: Config, counterService:CounterService)(imp
     }
   }
 
-  val source: Source[String, _] = ???
+  def lineIterator: Iterator[String] = Iterator continually StdIn.readLine()
+
+  val source: Source[String, _] = Source fromIterator (() => lineIterator) 
 
   val parserFlow: Flow[String, JsonElement, NotUsed] = Flow[String].map(json => parseLine(json)) 
 
