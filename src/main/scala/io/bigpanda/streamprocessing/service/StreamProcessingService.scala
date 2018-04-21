@@ -6,13 +6,22 @@ import com.typesafe.scalalogging.LazyLogging
 import scala.concurrent.ExecutionContextExecutor
 import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import io.bigpanda.streamprocessing.model.JsonElement
+import io.bigpanda.streamprocessing.model.{InvalidJsonElement, JsonElement, ValidJsonElement}
+import io.bigpanda.streamprocessing.util.JsonUtil
 
 class StreamProcessingService(config: Config, counterService:CounterService)(implicit system: ActorSystem) extends LazyLogging {
 
   private implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-  def parseLine(line: String): JsonElement = ???
+  def parseLine(line: String): JsonElement = {
+    try {
+      JsonUtil.fromJson[ValidJsonElement](line)
+    } catch {
+      case _: Throwable =>
+        logger.error(s"Malformed JSON: $line could not be parsed")
+        InvalidJsonElement(line)
+    }
+  }
 
   val source: Source[String, _] = ???
 
