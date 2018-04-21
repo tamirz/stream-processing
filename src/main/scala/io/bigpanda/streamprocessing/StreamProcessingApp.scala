@@ -21,8 +21,8 @@ object StreamProcessingApp extends App with LazyLogging with CounterRoutes {
   private val streamProcessingService = new StreamProcessingService(config, counterService)
 
   private def initServer(): Unit = {
-    val host: String = ???
-    val port: Int = ???
+    val host: String = config.getString("server.host")
+    val port: Int = config.getInt("server.port")
     lazy val routes: Route = counterRoutes
     Http().bindAndHandle(routes, host, port)
   }
