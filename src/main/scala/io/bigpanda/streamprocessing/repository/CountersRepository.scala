@@ -1,6 +1,7 @@
 package io.bigpanda.streamprocessing.repository
 
-import akka.actor.Props
+import akka.actor.{Actor, Props}
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.mutable
 
@@ -15,7 +16,9 @@ object CounterRepository {
   def props: Props = Props[CountersRepository]
 }
 
-class CountersRepository {
+class CountersRepository extends Actor with LazyLogging {
+
+  import CounterRepository._
 
   private val eventTypeCountersMap: mutable.Map[String, Int] = mutable.Map[String, Int]()
   private val wordCounterMap: mutable.Map[String, Int] = mutable.Map[String, Int]()
@@ -33,5 +36,31 @@ class CountersRepository {
       counter = map(key)
     }
     counter
+  }
+
+  def receive: Receive = {
+    case GetEvents =>
+      sender() ! eventTypeCountersMap.toString()
+
+    case GetWords =>
+      sender() ! wordCounterMap.toString()
+
+    case GetEventTypeCounter(eventType) =>
+      logger.debug(s"GetEventTypeCounter executed for: $eventType")
+      val result = s"Type: $eventType, counter: " + getCounter(eventTypeCountersMap, eventType)
+      sender() ! result
+
+    case GetWordCounter(word) =>
+      logger.debug(s"GetWordCounter executed for: $word")
+      val result = s"Word: $word , counter: " + getCounter(wordCounterMap, word)
+      sender() ! result
+
+    case IncrementEventTypeCounter(eventType) =>
+      logger.debug(s"IncrementEventTypeCounter executed for: $eventType")
+      incrementCounter(eventTypeCountersMap, eventType)
+
+    case IncrementWordCounter(word) =>
+      logger.debug(s"IncrementWordCounter executed for: $word")
+      incrementCounter(wordCounterMap, word)
   }
 }
