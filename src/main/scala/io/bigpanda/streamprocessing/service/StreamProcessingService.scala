@@ -31,8 +31,11 @@ class StreamProcessingService(config: Config, counterService:CounterService)(imp
 
   val wordCounterFlow: Flow[JsonElement, JsonElement, NotUsed] = ???
 
-  val sink: Sink[JsonElement, _] = ???
-
+  val sink: Sink[JsonElement, _] = Sink foreach(jsonElement => {
+    if (jsonElement.isInstanceOf[ValidJsonElement]) {
+      logger.info(s"The following JSON element was processed: $jsonElement")
+    }
+  }) 
 
   def execute(): Unit = {
     val runnable: RunnableGraph[Any] = source via parserFlow via eventTypeCounterFlow via wordCounterFlow to sink
