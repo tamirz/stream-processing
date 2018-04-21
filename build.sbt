@@ -16,7 +16,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "ch.qos.logback" % "logback-classic" % "1.2.3" % Test,
+    "ch.qos.logback" % "logback-classic" % "1.2.3",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
     "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
