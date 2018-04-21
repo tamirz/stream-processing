@@ -1,38 +1,25 @@
 package io.bigpanda.streamprocessing.service
 
+import java.util.concurrent.TimeUnit
+
+import akka.actor.{ActorRef, ActorSystem}
 import com.typesafe.scalalogging.LazyLogging
+import io.bigpanda.streamprocessing.repository.CounterRepository.{IncrementEventTypeCounter, IncrementWordCounter}
+import akka.pattern.ask
+import akka.util.Timeout
 
-import scala.collection.mutable
+class CounterService (implicit system: ActorSystem, implicit val counterRepository: ActorRef) extends LazyLogging {
 
-class CounterService extends LazyLogging {
-
-  //TODO: extract the following maps
-  private val eventTypeCounter: mutable.Map[String, Int] = mutable.Map[String, Int]()
-  private val wordCounter: mutable.Map[String, Int] = mutable.Map[String, Int]()
-
-  private def incrementCounter(map: mutable.Map[String, Int], element: String): Unit = {
-    if (!map.keySet.contains(element)) {
-      map.update(element, 0)
-    }
-    map.update(element, map(element) + 1)
-  }
+  implicit lazy val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
 
   def updateWordCounter(word: String): Unit = {
     logger.debug(s"Updating word counter, for word: $word")
-    incrementCounter(wordCounter, word)
+    counterRepository ? IncrementWordCounter(word)
   }
 
   def updateTypeCounter(eventType: String): Unit = {
     logger.debug(s"Updating event type counter, for type: $eventType")
-    incrementCounter(eventTypeCounter, eventType)
+    counterRepository ? IncrementEventTypeCounter(eventType)
   }
 
-  def getEventTypeCount(eventType: String): Int = {
-    eventTypeCounter(eventType)
-  }
-
-  def getWordCount(word: String): Int = {
-    wordCounter(word)
-  }
 }
-
