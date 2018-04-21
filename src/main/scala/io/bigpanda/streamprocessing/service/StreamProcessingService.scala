@@ -25,7 +25,7 @@ class StreamProcessingService(config: Config, counterService:CounterService)(imp
 
   val source: Source[String, _] = ???
 
-  val parserFlow: Flow[String, JsonElement, NotUsed] = ???
+  val parserFlow: Flow[String, JsonElement, NotUsed] = Flow[String].map(json => parseLine(json)) 
 
   val eventTypeCounterFlow: Flow[JsonElement, JsonElement, NotUsed] = Flow[JsonElement].map(json => {
     json match {
