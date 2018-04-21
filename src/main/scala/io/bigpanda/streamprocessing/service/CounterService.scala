@@ -18,12 +18,12 @@ class CounterService extends LazyLogging {
   }
 
   def updateWordCounter(word: String): Unit = {
-    logger.info(s"Updating word counter, for word: $word")
+    logger.debug(s"Updating word counter, for word: $word")
     incrementCounter(wordCounter, word)
   }
 
   def updateTypeCounter(eventType: String): Unit = {
-    logger.info(s"Updating event type counter, for type: $eventType")
+    logger.debug(s"Updating event type counter, for type: $eventType")
     incrementCounter(eventTypeCounter, eventType)
   }
 
