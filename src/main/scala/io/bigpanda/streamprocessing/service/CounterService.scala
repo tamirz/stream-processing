@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 class CounterService extends LazyLogging {
 
-  #TODO: extract the following maps
+  //TODO: extract the following maps
   private val eventTypeCounter: mutable.Map[String, Int] = mutable.Map[String, Int]()
   private val wordCounter: mutable.Map[String, Int] = mutable.Map[String, Int]()
 
