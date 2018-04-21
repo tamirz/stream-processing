@@ -15,9 +15,9 @@ object StreamProcessingApp extends App with LazyLogging with CounterRoutes {
   implicit val system: ActorSystem = ActorSystem("stream-processing-app")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val counterRepository: ActorRef = system.actorOf(CounterRepository.props, "countersRepository")
+  implicit val counterService: CounterService = new CounterService()
 
   private val config: Config = ConfigFactory.load()
-  private val counterService: CounterService = new CounterService()
   private val streamProcessingService = new StreamProcessingService(config, counterService)
 
   private def initServer(): Unit = {
