@@ -27,9 +27,23 @@ class StreamProcessingService(config: Config, counterService:CounterService)(imp
 
   val parserFlow: Flow[String, JsonElement, NotUsed] = ???
 
-  val eventTypeCounterFlow: Flow[JsonElement, JsonElement, NotUsed] = ???
+  val eventTypeCounterFlow: Flow[JsonElement, JsonElement, NotUsed] = Flow[JsonElement].map(json => {
+    json match {
+      case validJson: ValidJsonElement =>
+        counterService.updateTypeCounter(validJson.event_type)
+      case _ =>
+    }
+    json
+  })
 
-  val wordCounterFlow: Flow[JsonElement, JsonElement, NotUsed] = ???
+  val wordCounterFlow: Flow[JsonElement, JsonElement, NotUsed] = Flow[JsonElement].map(json => {
+    json match {
+      case validJson: ValidJsonElement =>
+        validJson.data.split(" ").foreach(word => counterService.updateWordCounter(word))
+      case _ =>
+    }
+    json
+  }) 
 
   val sink: Sink[JsonElement, _] = Sink foreach(jsonElement => {
     if (jsonElement.isInstanceOf[ValidJsonElement]) {
